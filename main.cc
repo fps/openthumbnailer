@@ -26,6 +26,49 @@
 
 #include <sys/time.h>
 
+/**
+    Returns cv::Mat() if some benign error condition has occured. 
+    Might throw if serious error occured
+*/
+cv::Mat get_frame(cv::VideoCapture &video_capture, unsigned frame)
+{
+    bool success = true;
+
+    success = video_capture.set(CV_CAP_PROP_POS_FRAMES, (double)frame);
+    
+    if (false == success)
+    {
+        std::cout << "Failed to seek to frame: " << frame << ". Exiting..." << std::endl;
+        return cv::Mat();
+    }
+    
+    double current_video_capture_frame = video_capture.get(CV_CAP_PROP_POS_FRAMES);
+    if ((double)frame != current_video_capture_frame)
+    {
+        std::cout << "Failed to seek to frame: " << frame << ". Exiting..." << std::endl;
+        return cv::Mat();
+    }
+
+    std::cout << "Extracting frame..." << std::endl;
+    
+    cv::Mat video_frame;
+    success = video_capture.read(video_frame);
+    
+    if (false == success)
+    {
+        std::cout << "Failed to read frame. Exiting..." << std::endl;
+        return cv::Mat();
+    }
+    
+    if (video_frame.empty())
+    {
+        std::cout << "Failed to read frame - got empty frame. Exiting..." << std::endl;
+        return cv::Mat();
+    }
+
+    return video_frame;
+}
+
 int main(int argc, char *argv[])
 {
     namespace po = boost::program_options;
@@ -123,37 +166,12 @@ int main(int argc, char *argv[])
             }
             
             std::cout << "Processing frame: " << current_frame << std::endl;
-            bool success = true;
-        
-            success = video_capture.set(CV_CAP_PROP_POS_FRAMES, (double)current_frame);
-            
-            if (false == success)
-            {
-                std::cout << "Failed to seek to frame: " << current_frame << ". Exiting..." << std::endl;
-                break;
-            }
-            
-            double current_video_capture_frame = video_capture.get(CV_CAP_PROP_POS_FRAMES);
-            if ((double)current_frame != current_video_capture_frame)
-            {
-                std::cout << "Failed to seek to frame: " << current_frame << ". Exiting..." << std::endl;
-                break;
-            }
 
-            std::cout << "Extracting frame..." << std::endl;
-            
-            cv::Mat frame;
-            success = video_capture.read(frame);
-            
-            if (false == success)
-            {
-                std::cout << "Failed to read frame. Exiting..." << std::endl;
-                break;
-            }
+            cv::Mat frame = get_frame(video_capture, current_frame);
             
             if (frame.empty())
             {
-                std::cout << "Failed to read frame - got empty frame. Exiting..." << std::endl;
+                std::cout << "Seems we're done here..." << std::endl;
                 break;
             }
             
@@ -161,7 +179,7 @@ int main(int argc, char *argv[])
             
             std::cout << "Writing thumbnail: " << output_filename_buffer << std::endl;
             
-            success = cv::imwrite(output_filename_buffer, frame);
+            bool success = cv::imwrite(output_filename_buffer, frame);
             
             if (false == success)
             {
