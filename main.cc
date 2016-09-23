@@ -1,3 +1,20 @@
+/*
+    Copyright (C) 2016 Florian Paul Schmidt <mista.tapas@gmx.net>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #include <boost/program_options.hpp>
 #include <opencv2/opencv.hpp>
 
@@ -26,6 +43,10 @@ int main(int argc, char *argv[])
     
     const unsigned MAX_OUTPUT_FILENAME_LENGTH = 100000;
     char output_filename_buffer[MAX_OUTPUT_FILENAME_LENGTH + 1];
+
+    const char *license = 
+        #include "LICENSE.txt"
+    ;
     
     try
     {
@@ -39,6 +60,7 @@ int main(int argc, char *argv[])
             ("input-file,i", po::value<std::string>(&input_file)->default_value(input_file), "The input video file name")
             ("output-file,o", po::value<std::string>(&output_file)->default_value(output_file), "The basename for the output thumbnails. Note that this is a format string for snprintf()")
             ("watchdog-timeout", po::value<unsigned>(&watchdog_timeout_seconds)->default_value(watchdog_timeout_seconds), "How long to wait for processing a frame (including seeking, etc) to finish. If this time (seconds) is exceeded abort with failure. Use 0 to disable the watchdog.")
+            ("license", "Output license information")
         ;
         
         po::variables_map variables_map;
@@ -50,6 +72,20 @@ int main(int argc, char *argv[])
             std::cout << options_description << std::endl;
             return EXIT_SUCCESS;
         }
+        
+        if (variables_map.count("license"))
+        {
+            std::cout << license << std::endl;
+            return EXIT_SUCCESS;
+        }
+
+        
+        std::cout
+            << "openthumbnailer Copyright (C) 2016 Florian Paul Schmidt" << std::endl
+            << "This program comes with ABSOLUTELY NO WARRANTY;" << std::endl
+            << "This is free software, and you are welcome to redistribute it" << std::endl
+            << "under certain conditions; Use --license for details" << std::endl
+            ;
         
         std::cout << "Processing input file: " << input_file << std::endl;
         
