@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
             ("max-frame", po::value<unsigned>(&max_frame)->default_value(UINT_MAX), "Frame at which to stop processing")
             ("input-file,i", po::value<std::string>(&input_file)->default_value("video.mp4"), "The input video file name")
             ("output-file,o", po::value<std::string>(&output_file)->default_value("output_%05d.jpg"), "The basename for the output thumbnails. Note that this is a format string for snprintf()")
-            ("watchdog-timeout", po::value<unsigned>(&watchdog_timeout_seconds)->default_value(watchdog_timeout_seconds), "How long to wait for seeking calls, etc, to finish. If this time (seconds) is exceeded abort with failure.")
+            ("watchdog-timeout", po::value<unsigned>(&watchdog_timeout_seconds)->default_value(watchdog_timeout_seconds), "How long to wait for processing a frame (including seeking, etc) to finish. If this time (seconds) is exceeded abort with failure.")
         ;
         
         po::variables_map variables_map;
