@@ -138,4 +138,6 @@ int main(int argc, char *argv[])
         std::cout << "Fail: " << e.what() << std::endl;
         return EXIT_FAILURE;
     }
+    
+    return EXIT_SUCCESS;
 }
