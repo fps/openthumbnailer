@@ -20,11 +20,10 @@ int main(int argc, char *argv[])
     std::string input_file = "video.mp4";
     std::string output_file = "output_%010d.jpg";
     
-    const unsigned MAX_OUTPUT_FILENAME_LENGTH = 100000;
-    
-    char output_filename_buffer[MAX_OUTPUT_FILENAME_LENGTH + 1];
-    
     unsigned watchdog_timeout_seconds = 15u;
+    
+    const unsigned MAX_OUTPUT_FILENAME_LENGTH = 100000;
+    char output_filename_buffer[MAX_OUTPUT_FILENAME_LENGTH + 1];
     
     try
     {
