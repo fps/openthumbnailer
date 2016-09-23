@@ -1,6 +1,6 @@
 # openthumbnailer
 
-A little program to write video thumbnails based on OpenCV
+A little program to write video thumbnails based on OpenCV. It should work as is on Linux and OS X. You will probably need to make minor modifications to make it work on Windows. Please send patches if you figure it out..
 
 # Requirements
 
