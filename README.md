@@ -13,7 +13,7 @@ A little program to write video thumbnails based on OpenCV
 
 <code>for n in /path/to/your/video/collection/*; do ./openthumbnailer -i "$n" -o "$n".%010d.jpg --frame-advance 10000 ; done</code>
 
-<code>
+<pre>
   -h [ --help ]                         Output help text and exit successfully
   --frame-offset arg (=0)               With wich frame to start writing thumbs
   --frame-advance arg (=100)            How many frames to advance between 
@@ -27,7 +27,7 @@ A little program to write video thumbnails based on OpenCV
   --watchdog-timeout arg (=5)           How long to wait for seeking calls, 
                                         etc, to finish. If this time (seconds) 
                                         is exceeded abort with failure.
-</code>
+</pre>
 
 # Issues
 
