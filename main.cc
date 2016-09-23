@@ -17,8 +17,8 @@ int main(int argc, char *argv[])
     unsigned frame_advance = 100;
     unsigned max_frame = UINT_MAX;
     
-    std::string input_file = "";
-    std::string output_file = "";
+    std::string input_file = "video.mp4";
+    std::string output_file = "output_%010d.jpg";
     
     const unsigned MAX_OUTPUT_FILENAME_LENGTH = 100000;
     
@@ -31,11 +31,11 @@ int main(int argc, char *argv[])
         po::options_description options_description;
         options_description.add_options()
             ("help,h", "Output help text and exit successfully")
-            ("frame-offset", po::value<unsigned>(&frame_offset)->default_value(0u), "With wich frame to start writing thumbs")
-            ("frame-advance", po::value<unsigned>(&frame_advance)->default_value(100u), "How many frames to advance between writing thumbs")
-            ("max-frame", po::value<unsigned>(&max_frame)->default_value(UINT_MAX), "Frame at which to stop processing")
-            ("input-file,i", po::value<std::string>(&input_file)->default_value("video.mp4"), "The input video file name")
-            ("output-file,o", po::value<std::string>(&output_file)->default_value("output_%05d.jpg"), "The basename for the output thumbnails. Note that this is a format string for snprintf()")
+            ("frame-offset", po::value<unsigned>(&frame_offset)->default_value(frame_offset), "With wich frame to start writing thumbs")
+            ("frame-advance", po::value<unsigned>(&frame_advance)->default_value(frame_advance), "How many frames to advance between writing thumbs")
+            ("max-frame", po::value<unsigned>(&max_frame)->default_value(max_frame), "Frame at which to stop processing")
+            ("input-file,i", po::value<std::string>(&input_file)->default_value(input_file), "The input video file name")
+            ("output-file,o", po::value<std::string>(&output_file)->default_value(output_file), "The basename for the output thumbnails. Note that this is a format string for snprintf()")
             ("watchdog-timeout", po::value<unsigned>(&watchdog_timeout_seconds)->default_value(watchdog_timeout_seconds), "How long to wait for processing a frame (including seeking, etc) to finish. If this time (seconds) is exceeded abort with failure.")
         ;
         
