@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
             ("help,h", "Output help text and exit successfully")
             ("frame-offset", po::value<unsigned>(&frame_offset)->default_value(frame_offset), "With wich frame to start writing thumbs")
             ("frame-advance", po::value<unsigned>(&frame_advance)->default_value(frame_advance), "How many frames to advance between writing thumbs")
-            ("frame,f", po::value<std::vector<unsigned>>(), "Explicit frames. Once --frame is specified at least once, then the frame-offset, max-frame and frame-advance options are ignored and only the explicit frames are processed.")
+            ("frame,f", po::value<std::vector<unsigned>>(&frames), "Explicit frames. Once --frame is specified at least once, then the frame-offset, max-frame and frame-advance options are ignored and only the explicit frames are processed.")
             ("max-frame", po::value<unsigned>(&max_frame)->default_value(max_frame), "Frame at which to stop processing")
             ("input-file,i", po::value<std::string>(&input_file)->default_value(input_file), "The input video file name")
             ("output-file,o", po::value<std::string>(&output_file)->default_value(output_file), "The basename for the output thumbnails. Note that this is a format string for snprintf()")
@@ -158,16 +158,30 @@ int main(int argc, char *argv[])
             throw std::runtime_error("Failed to open video: " + input_file);
         }
         
-        unsigned current_frame = frame_offset;
+        auto frames_iterator = frames.begin();
+        
+        unsigned current_frame = 0;
+        
+        if (false == frames.empty())
+        {
+            current_frame = *frames_iterator;
+        }
+        else
+        {
+            current_frame = frame_offset;
+        }
         
         while(true)
         {
             set_watchdog_timeout(watchdog_timeout_seconds);
             
-            if (current_frame >= max_frame)
+            if (true == frames.empty())
             {
-                std::cout << "Exceeded max-frame: " << max_frame << ". Exiting..." << std::endl;
-                break;
+                if (current_frame >= max_frame)
+                {
+                    std::cout << "Exceeded max-frame: " << max_frame << ". Exiting..." << std::endl;
+                    break;
+                }
             }
             
             std::cout << "Processing frame: " << current_frame << std::endl;
@@ -191,7 +205,19 @@ int main(int argc, char *argv[])
                 throw std::runtime_error("Failed to write image");
             }
             
-            current_frame += frame_advance;
+            if (false == frames.empty())
+            {
+                ++frames_iterator;
+                if (frames_iterator == frames.end())
+                {
+                    break;
+                }
+                current_frame = *frames_iterator;
+            }
+            else
+            {
+                current_frame += frame_advance;
+            }   
         }
     }
     catch(std::exception &e)
