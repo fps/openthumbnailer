@@ -8,6 +8,7 @@ A little program to write video thumbnails based on OpenCV. It should work as is
 * <code>SIGVTALARM</code>
 * <code>boost::program_options</code>
 * OpenCV2
+* regexec for (re)generating the README.md
 
 # Usage
 
