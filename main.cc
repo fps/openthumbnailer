@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
     
     char output_filename_buffer[MAX_OUTPUT_FILENAME_LENGTH + 1];
     
-    unsigned watchdog_timeout_seconds = 5u;
+    unsigned watchdog_timeout_seconds = 15u;
     
     try
     {
@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
             ("max-frame", po::value<unsigned>(&max_frame)->default_value(max_frame), "Frame at which to stop processing")
             ("input-file,i", po::value<std::string>(&input_file)->default_value(input_file), "The input video file name")
             ("output-file,o", po::value<std::string>(&output_file)->default_value(output_file), "The basename for the output thumbnails. Note that this is a format string for snprintf()")
-            ("watchdog-timeout", po::value<unsigned>(&watchdog_timeout_seconds)->default_value(watchdog_timeout_seconds), "How long to wait for processing a frame (including seeking, etc) to finish. If this time (seconds) is exceeded abort with failure.")
+            ("watchdog-timeout", po::value<unsigned>(&watchdog_timeout_seconds)->default_value(watchdog_timeout_seconds), "How long to wait for processing a frame (including seeking, etc) to finish. If this time (seconds) is exceeded abort with failure. Use 0 to disable the watchdog.")
         ;
         
         po::variables_map variables_map;
@@ -62,17 +62,20 @@ int main(int argc, char *argv[])
         
         while(true)
         {
-            itimerval timer;
-            itimerval old_timer;
-            timer.it_interval.tv_sec = 0;
-            timer.it_interval.tv_usec = 0;
-            timer.it_value.tv_sec = watchdog_timeout_seconds;
-            timer.it_value.tv_usec = 0;
-            int timer_success = setitimer(ITIMER_VIRTUAL, &timer, &old_timer);
-            
-            if (0 != timer_success)
+            if (0 != watchdog_timeout_seconds)
             {
-                throw std::runtime_error("Failed to set watchdog timeout");
+                itimerval timer;
+                itimerval old_timer;
+                timer.it_interval.tv_sec = 0;
+                timer.it_interval.tv_usec = 0;
+                timer.it_value.tv_sec = watchdog_timeout_seconds;
+                timer.it_value.tv_usec = 0;
+                int timer_success = setitimer(ITIMER_VIRTUAL, &timer, &old_timer);
+                
+                if (0 != timer_success)
+                {
+                    throw std::runtime_error("Failed to set watchdog timeout");
+                }
             }
             
             if (current_frame >= max_frame)
