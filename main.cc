@@ -17,6 +17,8 @@ int main(int argc, char *argv[])
     unsigned frame_advance = 100;
     unsigned max_frame = UINT_MAX;
     
+    std::vector<unsigned> frames;
+    
     std::string input_file = "video.mp4";
     std::string output_file = "output_%010d.jpg";
     
@@ -32,6 +34,7 @@ int main(int argc, char *argv[])
             ("help,h", "Output help text and exit successfully")
             ("frame-offset", po::value<unsigned>(&frame_offset)->default_value(frame_offset), "With wich frame to start writing thumbs")
             ("frame-advance", po::value<unsigned>(&frame_advance)->default_value(frame_advance), "How many frames to advance between writing thumbs")
+            ("frame,f", po::value<std::vector<unsigned>>(), "Explicit frames. Once --frame is specified at least once, then the frame-offset, max-frame and frame-advance options are ignored and only the explicit frames are processed.")
             ("max-frame", po::value<unsigned>(&max_frame)->default_value(max_frame), "Frame at which to stop processing")
             ("input-file,i", po::value<std::string>(&input_file)->default_value(input_file), "The input video file name")
             ("output-file,o", po::value<std::string>(&output_file)->default_value(output_file), "The basename for the output thumbnails. Note that this is a format string for snprintf()")
