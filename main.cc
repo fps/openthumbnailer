@@ -69,6 +69,25 @@ cv::Mat get_frame(cv::VideoCapture &video_capture, unsigned frame)
     return video_frame;
 }
 
+void set_watchdog_timeout(unsigned watchdog_timeout_seconds)
+{
+    if (0 != watchdog_timeout_seconds)
+    {
+        itimerval timer;
+        itimerval old_timer;
+        timer.it_interval.tv_sec = 0;
+        timer.it_interval.tv_usec = 0;
+        timer.it_value.tv_sec = watchdog_timeout_seconds;
+        timer.it_value.tv_usec = 0;
+        int timer_success = setitimer(ITIMER_VIRTUAL, &timer, &old_timer);
+        
+        if (0 != timer_success)
+        {
+            throw std::runtime_error("Failed to set watchdog timeout");
+        }
+    }
+}
+
 int main(int argc, char *argv[])
 {
     namespace po = boost::program_options;
@@ -143,21 +162,7 @@ int main(int argc, char *argv[])
         
         while(true)
         {
-            if (0 != watchdog_timeout_seconds)
-            {
-                itimerval timer;
-                itimerval old_timer;
-                timer.it_interval.tv_sec = 0;
-                timer.it_interval.tv_usec = 0;
-                timer.it_value.tv_sec = watchdog_timeout_seconds;
-                timer.it_value.tv_usec = 0;
-                int timer_success = setitimer(ITIMER_VIRTUAL, &timer, &old_timer);
-                
-                if (0 != timer_success)
-                {
-                    throw std::runtime_error("Failed to set watchdog timeout");
-                }
-            }
+            set_watchdog_timeout(watchdog_timeout_seconds);
             
             if (current_frame >= max_frame)
             {
