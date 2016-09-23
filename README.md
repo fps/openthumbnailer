@@ -35,5 +35,3 @@ A little program to write video thumbnails based on OpenCV
 # Issues
 
 Possible code injection via ouput format string as it uses snprintf and I'm too lazy to figure the out the safe C++ way to do this.
-
-
