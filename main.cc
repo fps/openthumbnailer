@@ -18,6 +18,10 @@ int main(int argc, char *argv[])
     std::string input_file = "";
     std::string output_file = "";
     
+    const unsigned MAX_OUTPUT_FILENAME_LENGTH = 100000;
+    
+    char output_filename_buffer[MAX_OUTPUT_FILENAME_LENGTH + 1];
+    
     try
     {
         po::options_description options_description;
@@ -27,7 +31,7 @@ int main(int argc, char *argv[])
             ("frame-skip", po::value<unsigned>(&frame_skip)->default_value(100u), "How many frames to skip between writing thumbs")
             ("max-frame", po::value<unsigned>(&max_frame)->default_value(UINT_MAX), "Frame at which to stop processing")
             ("input-file,i", po::value<std::string>(&input_file)->default_value("video.mp4"), "The input video file name")
-            ("output-file,o", po::value<std::string>(&output_file)->default_value("output_%5d.jpg"), "The basename for the output thumbnails")
+            ("output-file,o", po::value<std::string>(&output_file)->default_value("output_%05d.jpg"), "The basename for the output thumbnails")
         ;
         
         po::variables_map variables_map;
@@ -78,11 +82,23 @@ int main(int argc, char *argv[])
                 break;
             }
             
+            snprintf(output_filename_buffer, MAX_OUTPUT_FILENAME_LENGTH, output_file.c_str(), current_frame);
+            
+            std::cout << "Writing thumbnail: " << output_filename_buffer << std::endl;
+            
+            success = cv::imwrite(output_filename_buffer, frame);
+            
+            if (false == success)
+            {
+                throw std::runtime_error("Failed to write image");
+            }
+            
             current_frame += frame_skip;
         }
     }
     catch(std::exception &e)
     {
-        std::cout << e.what() << std::endl;
+        std::cout << "Fail: " << e.what() << std::endl;
+        return EXIT_FAILURE;
     }
 }
