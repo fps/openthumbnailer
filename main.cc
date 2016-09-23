@@ -7,6 +7,8 @@
 #include <string>
 #include <climits>
 
+#include <sys/time.h>
+
 int main(int argc, char *argv[])
 {
     namespace po = boost::program_options;
@@ -22,6 +24,8 @@ int main(int argc, char *argv[])
     
     char output_filename_buffer[MAX_OUTPUT_FILENAME_LENGTH + 1];
     
+    unsigned watchdog_timeout_seconds = 5u;
+    
     try
     {
         po::options_description options_description;
@@ -32,6 +36,7 @@ int main(int argc, char *argv[])
             ("max-frame", po::value<unsigned>(&max_frame)->default_value(UINT_MAX), "Frame at which to stop processing")
             ("input-file,i", po::value<std::string>(&input_file)->default_value("video.mp4"), "The input video file name")
             ("output-file,o", po::value<std::string>(&output_file)->default_value("output_%05d.jpg"), "The basename for the output thumbnails. Note that this is a format string for snprintf()")
+            ("watchdog-timeout", po::value<unsigned>(&watchdog_timeout_seconds)->default_value(watchdog_timeout_seconds), "How long to wait for seeking calls, etc, to finish. If this time (seconds) is exceeded abort with failure.")
         ;
         
         po::variables_map variables_map;
@@ -44,6 +49,7 @@ int main(int argc, char *argv[])
             return EXIT_SUCCESS;
         }
         
+        std::cout << "Processing input file: " << input_file << std::endl;
         
         cv::VideoCapture video_capture(input_file);
         
@@ -56,6 +62,19 @@ int main(int argc, char *argv[])
         
         while(true)
         {
+            itimerval timer;
+            itimerval old_timer;
+            timer.it_interval.tv_sec = 0;
+            timer.it_interval.tv_usec = 0;
+            timer.it_value.tv_sec = watchdog_timeout_seconds;
+            timer.it_value.tv_usec = 0;
+            int timer_success = setitimer(ITIMER_VIRTUAL, &timer, &old_timer);
+            
+            if (0 != timer_success)
+            {
+                throw std::runtime_error("Failed to set watchdog timeout");
+            }
+            
             if (current_frame >= max_frame)
             {
                 std::cout << "Exceeded max-frame: " << max_frame << ". Exiting..." << std::endl;
@@ -73,12 +92,27 @@ int main(int argc, char *argv[])
                 break;
             }
             
+            double current_video_capture_frame = video_capture.get(CV_CAP_PROP_POS_FRAMES);
+            if ((double)current_frame != current_video_capture_frame)
+            {
+                std::cout << "Failed to seek to frame: " << current_frame << ". Exiting..." << std::endl;
+                break;
+            }
+
+            std::cout << "Extracting frame..." << std::endl;
+            
             cv::Mat frame;
             success = video_capture.read(frame);
             
             if (false == success)
             {
                 std::cout << "Failed to read frame. Exiting..." << std::endl;
+                break;
+            }
+            
+            if (frame.empty())
+            {
+                std::cout << "Failed to read frame - got empty frame. Exiting..." << std::endl;
                 break;
             }
             
