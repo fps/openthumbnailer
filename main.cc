@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
             ("frame-skip", po::value<unsigned>(&frame_skip)->default_value(100u), "How many frames to skip between writing thumbs")
             ("max-frame", po::value<unsigned>(&max_frame)->default_value(UINT_MAX), "Frame at which to stop processing")
             ("input-file,i", po::value<std::string>(&input_file)->default_value("video.mp4"), "The input video file name")
-            ("output-file,o", po::value<std::string>(&output_file)->default_value("output_%05d.jpg"), "The basename for the output thumbnails")
+            ("output-file,o", po::value<std::string>(&output_file)->default_value("output_%05d.jpg"), "The basename for the output thumbnails. Note that this is a format string for snprintf()")
         ;
         
         po::variables_map variables_map;
