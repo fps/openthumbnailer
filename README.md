@@ -4,10 +4,10 @@ A little program to write video thumbnails based on OpenCV
 
 # Requirements
 
-* <sys/time.h> with setitimer
-* SIGVTALARM
-* boost::program_options
-* opencv2
+* <code><sys/time.h></code> with setitimer
+* <code>SIGVTALARM</code>
+* <code>boost::program_options</code>
+* OpenCV2
 
 # Usage
 
