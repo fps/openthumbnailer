@@ -20,4 +20,4 @@ HELP_OUTPUT
 
 # Issues
 
-Possible code injection via ouput format string as it uses snprintf and I'm too lazy to figure the out the safe C++ way to do this.
+Possible code injection via output format string as it uses snprintf and I'm too lazy to figure the out the safe C++ way to do this.
