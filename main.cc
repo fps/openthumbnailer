@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
     namespace po = boost::program_options;
     
     unsigned frame_offset = 0;
-    unsigned frame_skip = 0;
+    unsigned frame_advance = 100;
     unsigned max_frame = UINT_MAX;
     
     std::string input_file = "";
@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
         options_description.add_options()
             ("help,h", "Output help text and exit successfully")
             ("frame-offset", po::value<unsigned>(&frame_offset)->default_value(0u), "With wich frame to start writing thumbs")
-            ("frame-skip", po::value<unsigned>(&frame_skip)->default_value(100u), "How many frames to skip between writing thumbs")
+            ("frame-advance", po::value<unsigned>(&frame_advance)->default_value(100u), "How many frames to advance between writing thumbs")
             ("max-frame", po::value<unsigned>(&max_frame)->default_value(UINT_MAX), "Frame at which to stop processing")
             ("input-file,i", po::value<std::string>(&input_file)->default_value("video.mp4"), "The input video file name")
             ("output-file,o", po::value<std::string>(&output_file)->default_value("output_%05d.jpg"), "The basename for the output thumbnails. Note that this is a format string for snprintf()")
@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
                 throw std::runtime_error("Failed to write image");
             }
             
-            current_frame += frame_skip;
+            current_frame += frame_advance;
         }
     }
     catch(std::exception &e)
