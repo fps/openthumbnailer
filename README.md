@@ -35,6 +35,7 @@ A little program to write video thumbnails based on OpenCV. It should work as is
                                         with failure. Use 0 to disable the 
                                         watchdog.
   --license                             Output license information
+
 </pre>
 
 # Issues
